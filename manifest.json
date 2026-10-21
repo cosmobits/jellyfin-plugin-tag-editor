@@ -12,8 +12,8 @@
         "changelog": "Installable server plugin with automatic web integration, tag-only updates, and stale-edit protection.",
         "targetAbi": "10.11.0.0",
         "sourceUrl": "https://github.com/cosmobits/jellyfin-plugin-tag-editor/releases/download/v1.0.0.0/jellyfin-plugin-tag-editor_1.0.0.0.zip",
-        "checksum": "585a70d821f470556528e6e6a430279a",
-        "timestamp": "2026-10-21T15:47:28Z"
+        "checksum": "5ae0b9dcddde93e00948d3d3340898aa",
+        "timestamp": "2026-10-21T16:10:10Z"
       }
     ]
   }
