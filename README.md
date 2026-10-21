@@ -62,11 +62,13 @@ The generated manifest points to the intended GitHub release URL. The URL only b
 Create an empty public GitHub repository named **`jellyfin-plugin-tag-editor`** in the **`cosmobits`** account. Then connect and push this local repository:
 
 ```sh
-git remote add origin https://github.com/cosmobits/jellyfin-plugin-tag-editor.git
+git remote add origin git@github.com:cosmobits/jellyfin-plugin-tag-editor.git
 git push -u origin main
 git tag v1.0.0.0
 git push origin v1.0.0.0
 ```
+
+If this checkout already has `origin`, skip the `git remote add` command. This local checkout uses a dedicated cosmobits SSH key and an SSH remote; its settings live in `.git/config` and are not part of the published source. Keep private keys outside the repository. Set the Git author name/email locally for each checkout if you use multiple accounts.
 
 The tag starts the release workflow. It runs the checks, builds the ZIP, creates a GitHub Release with the archive and checksum, and then commits the matching `manifest.json` to `main`. The repository URL above becomes usable once the workflow finishes. The workflow uses GitHub's repository token; no publishing secret is required. Allow GitHub Actions to write repository contents, and ensure branch rules permit its manifest commit.
 
