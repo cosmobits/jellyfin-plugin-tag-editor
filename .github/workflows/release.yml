@@ -1,0 +1,48 @@
+name: Publish release and repository manifest
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: plugin-releases
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: dotnet test tests/Jellyfin.Plugin.TagEditor.Tests --configuration Release
+      - name: Package the tagged version
+        run: python3 scripts/package.py --no-build --expected-version "$GITHUB_REF_NAME" --manifest-output artifacts/manifest.json
+      - name: Publish the install archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" artifacts/*.zip artifacts/*.sha256 artifacts/release-manifest.json \
+            --verify-tag --title "Tag Editor $GITHUB_REF_NAME" --generate-notes
+      - name: Update the repository catalog after the archive is available
+        run: |
+          git fetch origin main
+          git checkout -B publish-manifest origin/main
+          python3 scripts/package.py --merge artifacts/release-manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish plugin catalog for $GITHUB_REF_NAME"
+            git push origin HEAD:main
+          fi

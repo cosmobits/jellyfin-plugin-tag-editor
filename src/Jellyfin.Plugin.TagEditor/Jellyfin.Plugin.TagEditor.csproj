@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Jellyfin.Plugin.TagEditor</RootNamespace>
+    <Description>Edit item tags directly in Jellyfin Web.</Description>
+    <Authors>cosmobits</Authors>
+    <RepositoryUrl>https://github.com/cosmobits/jellyfin-plugin-tag-editor</RepositoryUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Jellyfin.Controller" Version="$(JellyfinVersion)" ExcludeAssets="runtime" />
+    <PackageReference Include="Jellyfin.Model" Version="$(JellyfinVersion)" ExcludeAssets="runtime" />
+    <EmbeddedResource Include="Web/*" />
+  </ItemGroup>
+</Project>

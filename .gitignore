@@ -1,3 +1,11 @@
 .DS_Store
 *.user
 *.suo
+**/bin/
+**/obj/
+artifacts/
+node_modules/
+TestResults/
+__pycache__/
+.vs/
+.idea/

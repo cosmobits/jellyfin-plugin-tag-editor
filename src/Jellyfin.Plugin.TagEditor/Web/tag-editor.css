@@ -1,0 +1,26 @@
+.jfte-tag-editor { display: inline-flex !important; align-items: center; margin: .35rem 0 0 .35rem; pointer-events: auto !important; vertical-align: middle; }
+.jfte-tag-editor__button { position: relative; z-index: 1; display: inline-flex !important; align-items: center; justify-content: center; width: 2rem; height: 2rem; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; padding: 0; font: inherit; pointer-events: auto !important; }
+.jfte-tag-editor__button:hover, .jfte-tag-editor__button:focus-visible { background: rgba(255, 255, 255, .15); color: var(--theme-primary-color, #00a4dc); outline: 2px solid currentColor; outline-offset: 2px; }
+.jfte-tag-editor__button .material-icons { font-size: 1.25em; vertical-align: middle; }
+.jfte-tag-editor__dialog { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 1rem; background: rgba(0, 0, 0, .7); }
+.jfte-tag-editor__panel { width: min(32rem, 100%); background: var(--theme-background, #202020); color: inherit; padding: 1.25rem; border-radius: .25rem; box-sizing: border-box; }
+.jfte-tag-editor__tag-editor { position: relative; display: flex; flex-wrap: wrap; gap: .4rem; min-height: 3.25rem; margin: .75rem 0 1rem; padding: .5rem; border: 1px solid currentColor; border-radius: .2rem; }
+.jfte-tag-editor__pill { display: inline-flex; align-items: center; gap: .25rem; max-width: 100%; padding: .3rem .45rem; border-radius: 1rem; background: var(--theme-primary-color, #00a4dc); color: #fff; }
+.jfte-tag-editor__remove { display: inline-flex; align-items: center; justify-content: center; width: 1.25rem; height: 1.25rem; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; padding: 0; font-size: 1.1rem; line-height: 1; }
+.jfte-tag-editor__tag-input { flex: 1 1 9rem; min-width: 8rem; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; }
+.jfte-tag-editor__suggestions { position: absolute; z-index: 1; top: calc(100% + .25rem); left: 0; right: 0; max-height: 12rem; overflow-y: auto; background: var(--theme-background, #202020); border: 1px solid currentColor; border-radius: .2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, .35); }
+.jfte-tag-editor__suggestion { display: block; width: 100%; border: 0; background: transparent; color: inherit; cursor: pointer; padding: .65rem .75rem; text-align: left; font: inherit; }
+.jfte-tag-editor__suggestion:hover, .jfte-tag-editor__suggestion:focus-visible { background: rgba(255, 255, 255, .12); outline: 0; }
+.jfte-tag-editor__actions { display: flex; justify-content: flex-end; gap: .75rem; }
+.jfte-tag-editor__actions button { min-height: 2.5rem; padding: .5rem 1rem; border: 0; border-radius: .2rem; cursor: pointer; font: inherit; }
+.jfte-tag-editor__save { background: var(--theme-primary-color, #00a4dc); color: #fff; }
+.jfte-tag-editor__save:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 32rem) { .jfte-tag-editor__panel { padding: 1rem; } }
+.jfte-tag-editor__panel { max-height: calc(100vh - 2rem); overflow-y: auto; }
+.jfte-tag-editor__title { margin-top: 0; overflow-wrap: anywhere; }
+.jfte-tag-editor__pill { overflow-wrap: anywhere; }
+.jfte-tag-editor__error { color: #ffb4ab; white-space: pre-wrap; }
+.jfte-tag-editor__status { margin-top: .5rem; font-size: .9em; }
+.jfte-tag-editor__button--fallback { position: fixed; right: 1rem; bottom: 5rem; z-index: 100; }
+.jfte-tag-editor__remove:focus-visible { outline: 2px solid currentColor; }
+.jfte-tag-editor__tag-input:focus-visible { outline: 2px solid var(--theme-primary-color, #00a4dc); }

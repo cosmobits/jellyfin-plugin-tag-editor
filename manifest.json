@@ -1,0 +1,20 @@
+[
+  {
+    "guid": "886bc3d5-31bb-4dcb-8fbd-45e5caf9e05d",
+    "name": "Tag Editor",
+    "overview": "Edit tags directly on Jellyfin Web item detail pages.",
+    "description": "Adds an administrator-only tag editor to movie, series, episode, and music album detail pages in Jellyfin Web. Loads automatically without editing web files or installing a JavaScript injector. Requires Jellyfin 10.11.x and its bundled web client.",
+    "owner": "cosmobits",
+    "category": "General",
+    "versions": [
+      {
+        "version": "1.0.0.0",
+        "changelog": "Installable server plugin with automatic web integration, tag-only updates, and stale-edit protection.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/cosmobits/jellyfin-plugin-tag-editor/releases/download/v1.0.0.0/jellyfin-plugin-tag-editor_1.0.0.0.zip",
+        "checksum": "585a70d821f470556528e6e6a430279a",
+        "timestamp": "2026-10-21T15:47:28Z"
+      }
+    ]
+  }
+]
