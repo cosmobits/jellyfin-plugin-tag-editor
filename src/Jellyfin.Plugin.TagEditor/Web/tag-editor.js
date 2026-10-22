@@ -1,4 +1,4 @@
-/* Loaded automatically by the Tag Editor server plugin. No credentials are stored here. */
+/* Loaded automatically by the Tag Toolkit server plugin. No credentials are stored here. */
 (function tagEditor() {
     'use strict';
 
@@ -15,17 +15,38 @@
     let permission;
     let dialogState;
     let opening = false;
+    let homeKey = '';
+    let homePendingKey = '';
+    let homeLoadedKey = '';
+    let homeTags = null;
 
-    function context() {
-        const route = window.location.hash.slice(1) || window.location.pathname;
-        const [path, query = window.location.search.slice(1)] = route.split('?');
-        if (!/(^|\/)details\/?$/i.test(path)) return null;
-        const id = new URLSearchParams(query).get('id');
+    function route() {
+        const current = window.location.hash.slice(1) || window.location.pathname;
+        const [path, query = window.location.search.slice(1)] = current.split('?');
+        return { path, query };
+    }
+
+    function session() {
         const api = window.ApiClient;
         const userId = api?.getCurrentUserId();
-        if (!id || !api || !userId) return null;
-        const session = `${api.getUrl('TagEditor')}:${userId}`;
-        return { api, id, session, key: `${session}:${id}` };
+        if (!api || !userId) return null;
+        const key = `${api.getUrl('TagEditor')}:${userId}`;
+        return { api, userId, session: key };
+    }
+
+    function context() {
+        const { path, query } = route();
+        if (!/(^|\/)details\/?$/i.test(path)) return null;
+        const id = new URLSearchParams(query).get('id');
+        const current = session();
+        if (!id || !current) return null;
+        return { ...current, id, key: `${current.session}:${id}` };
+    }
+
+    function homeContext() {
+        const { path } = route();
+        if (!/(^|\/)(home|home\.html)\/?$/i.test(path)) return null;
+        return session();
     }
 
     function visiblePage() {
@@ -127,7 +148,107 @@
 
     function schedule() {
         window.clearTimeout(timer);
-        timer = window.setTimeout(refresh, 80);
+        timer = window.setTimeout(() => {
+            refresh();
+            refreshPopularTags();
+        }, 80);
+    }
+
+    function removePopularTags() {
+        document.querySelectorAll(`.${ROOT}__popular`).forEach(element => element.remove());
+    }
+
+    function renderPopularTags(ctx, tags) {
+        const page = document.querySelector('.homePage:not(.hide)');
+        const container = page?.querySelector('.homeSectionsContainer, .sections');
+        if (!container) return false;
+
+        const section = document.createElement('section');
+        section.className = `${ROOT}__popular verticalSection`;
+        section.setAttribute('aria-label', 'Popular tags');
+        const title = document.createElement('h2');
+        title.className = 'sectionTitle';
+        title.textContent = 'Popular tags';
+        const row = document.createElement('div');
+        row.className = `${ROOT}__popular-row`;
+
+        tags.forEach(tag => {
+            const name = tag.Name ?? tag.name;
+            if (!name) return;
+            const link = document.createElement('a');
+            const query = new URLSearchParams({
+                type: 'tag',
+                tag: name,
+                serverId: ctx.api.serverId() || ''
+            });
+            link.href = `#/list?${query}`;
+            link.className = `${ROOT}__popular-tag`;
+            link.textContent = name;
+            const count = Number(tag.Count ?? tag.count);
+            if (Number.isFinite(count) && count > 0) {
+                const badge = document.createElement('span');
+                badge.className = `${ROOT}__popular-count`;
+                badge.textContent = count.toLocaleString();
+                link.append(badge);
+            }
+            row.append(link);
+        });
+
+        if (!row.childElementCount) return true;
+        section.append(title, row);
+        container.prepend(section);
+        return true;
+    }
+
+    async function refreshPopularTags() {
+        if (destroyed) return;
+        const ctx = homeContext();
+        if (!ctx) {
+            homeKey = '';
+            homePendingKey = '';
+            homeLoadedKey = '';
+            homeTags = null;
+            removePopularTags();
+            return;
+        }
+
+        if (homeLoadedKey === ctx.session) {
+            if (homeTags?.length && !document.querySelector(`.${ROOT}__popular`)) {
+                renderPopularTags(ctx, homeTags);
+            }
+            return;
+        }
+        if (homePendingKey === ctx.session) return;
+        if (homeKey !== ctx.session) {
+            homeKey = ctx.session;
+            homeLoadedKey = '';
+            homeTags = null;
+            removePopularTags();
+        }
+
+        homePendingKey = ctx.session;
+        try {
+            const settings = await ctx.api.getJSON(ctx.api.getUrl('TagEditor/Settings'));
+            if (destroyed || homeContext()?.session !== ctx.session) return;
+            if (!(settings.ShowPopularTags ?? settings.showPopularTags)) {
+                homeTags = null;
+                homeLoadedKey = ctx.session;
+                removePopularTags();
+                return;
+            }
+
+            const tags = await ctx.api.getJSON(ctx.api.getUrl('TagEditor/PopularTags'));
+            if (destroyed || homeContext()?.session !== ctx.session) return;
+            homeTags = Array.isArray(tags) ? tags : [];
+            homeLoadedKey = ctx.session;
+            renderPopularTags(ctx, homeTags);
+        } catch (error) {
+            if (!destroyed && homeContext()?.session === ctx.session) {
+                console.debug('[Tag Editor] Could not load popular tags.', error);
+            }
+        } finally {
+            if (homePendingKey === ctx.session) homePendingKey = '';
+        }
     }
 
     async function suggestions(ctx) {
@@ -342,7 +463,8 @@
     // ApiClient is initialized asynchronously and may change when switching accounts/servers.
     const sessionWatcher = window.setInterval(() => {
         const current = context();
-        if ((current?.key || '') !== activeKey) schedule();
+        const home = homeContext();
+        if ((current?.key || '') !== activeKey || (home?.session || '') !== homeKey) schedule();
     }, 1000);
 
     window.JellyfinTagEditor = {
@@ -356,6 +478,7 @@
             window.clearInterval(sessionWatcher);
             dialogState?.close(true);
             removeLauncher();
+            removePopularTags();
         }
     };
     schedule();

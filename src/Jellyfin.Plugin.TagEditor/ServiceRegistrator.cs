@@ -11,6 +11,7 @@ public sealed class ServiceRegistrator : IPluginServiceRegistrator
     public void RegisterServices(IServiceCollection services, IServerApplicationHost applicationHost)
     {
         services.AddSingleton<TagService>();
+        services.AddSingleton<PopularTagService>();
         services.AddTransient<IStartupFilter, WebStartupFilter>();
     }
 }

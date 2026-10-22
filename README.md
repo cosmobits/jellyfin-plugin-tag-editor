@@ -1,8 +1,10 @@
-# Jellyfin Tag Editor
+# Jellyfin Tag Toolkit
 
-An installable Jellyfin server plugin by **cosmobits**. It adds an **Edit tags** button to movie, series, episode, and music album detail pages in Jellyfin Web.
+An installable Jellyfin server plugin by **cosmobits**. It adds an **Edit tags** button to movie, series, episode, and music album detail pages in Jellyfin Web, plus an optional row of popular tags on the home page.
 
 The plugin loads its own web UI automatically. It does not require a JavaScript injector, edits to `index.html`, or writable web client files. Tag changes use an administrator-only endpoint that updates tags without submitting the rest of the item's metadata. If another tag editor saved changes while your dialog was open, your save is rejected so their changes are not overwritten.
+
+The popular-tags row is off by default. Enable it from **Dashboard → Plugins → Tag Editor → Settings**. It shows up to 12 tags ranked by how many items visible to the signed-in user have each tag; selecting one opens Jellyfin's filtered item list.
 
 ## Compatibility
 
@@ -14,8 +16,6 @@ The plugin loads its own web UI automatically. It does not require a JavaScript 
 
 ## Install from the Jellyfin catalog
 
-**The GitHub repository and its first release must be published before this URL works.**
-
 1. In Jellyfin, open **Dashboard → Plugins → Repositories**, then add a repository.
 2. Set its name to **cosmobits** and URL to:
 
@@ -23,8 +23,9 @@ The plugin loads its own web UI automatically. It does not require a JavaScript 
    https://raw.githubusercontent.com/cosmobits/jellyfin-plugin-tag-editor/main/manifest.json
    ```
 
-3. Open **Catalog**, install **Tag Editor**, and restart Jellyfin.
+3. Open **Catalog**, install the plugin, and restart Jellyfin.
 4. Refresh Jellyfin Web and sign in as an administrator. Open a supported item and choose **Edit tags** beside its tags. If that layout has no tag container, the button appears near the item title or in the lower right.
+5. To show popular tags on the home page, open **Dashboard → Plugins → Tag Toolkit → Settings** and enable the option.
 
 Use Enter or a comma to add a tag, choose an existing tag suggestion, or remove a tag with its × button. Save also adds text still in the input. Escape or Cancel closes the dialog. Saves support up to 100 tags with 256 characters per tag; names are trimmed and duplicate names are combined without regard to capitalization.
 
@@ -50,7 +51,7 @@ python3 scripts/package.py
 
 The packaging script builds a Release DLL and creates:
 
-- `artifacts/jellyfin-plugin-tag-editor_1.0.0.0.zip`, containing the plugin assembly at the archive root.
+- `artifacts/jellyfin-plugin-tag-editor_<version>.zip`, containing the plugin assembly at the archive root.
 - A SHA-256 checksum file for manual downloads.
 - `manifest.json` with the archive's actual MD5 checksum, as required by Jellyfin's catalog.
 - `artifacts/release-manifest.json` for publishing the new version while preserving earlier catalog versions.
@@ -70,7 +71,7 @@ git push origin v1.0.0.0
 
 If this checkout already has `origin`, skip the `git remote add` command. This local checkout uses a dedicated cosmobits SSH key and an SSH remote; its settings live in `.git/config` and are not part of the published source. Keep private keys outside the repository. Set the Git author name/email locally for each checkout if you use multiple accounts.
 
-The tag starts the release workflow. It runs the checks, builds the ZIP, creates a GitHub Release with the archive and checksum, and then commits the matching `manifest.json` to `main`. The repository URL above becomes usable once the workflow finishes. The workflow uses GitHub's repository token; no publishing secret is required. Allow GitHub Actions to write repository contents, and ensure branch rules permit its manifest commit.
+The tag starts the release workflow. It runs the checks, builds the ZIP, creates a GitHub Release with the archive and checksum, and then commits the matching `manifest.json` to `main`. The workflow uses GitHub's repository token; no publishing secret is required. Allow GitHub Actions to write repository contents, and ensure branch rules permit its manifest commit.
 
 For later releases, bump the four-part `<Version>` in `Directory.Build.props`, update `CHANGELOG.md`, commit, and push a matching `v` tag. Release archives and existing catalog versions should be retained so already installed versions remain available. If the catalog commit is blocked by repository rules, the release archive is still published. Download that release's `release-manifest.json` into `artifacts/`, then merge it into `main` and push that change. Use the manifest attached to the release so its checksum matches the published archive:
 

@@ -82,7 +82,7 @@ def main():
     archive.with_suffix(".zip.sha256").write_text(f"{sha256}  {archive.name}\n")
     release = [{**metadata, "versions": [{
         "version": version,
-        "changelog": "Installable server plugin with automatic web integration, tag-only updates, and stale-edit protection.",
+        "changelog": "Add plugin settings and an optional user-scoped popular-tags row to Jellyfin Web.",
         "targetAbi": target_abi,
         "sourceUrl": f"https://github.com/{repository}/releases/download/v{version}/{archive.name}",
         "checksum": md5,

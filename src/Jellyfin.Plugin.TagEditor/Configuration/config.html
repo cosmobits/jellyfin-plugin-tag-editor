@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tag Toolkit</title>
+</head>
+<body>
+    <div id="tagEditorConfigurationPage" data-role="page" class="page type-interior pluginConfigurationPage configPage" data-require="emby-button,emby-checkbox">
+        <div data-role="content">
+            <div class="content-primary">
+                <h1>Tag Toolkit</h1>
+                <form class="configForm">
+                    <label class="checkboxContainer">
+                        <input is="emby-checkbox" type="checkbox" id="showPopularTags" />
+                        <span>Show popular tags on the home page</span>
+                    </label>
+                    <p>Displays up to 12 frequently used tags from libraries available to the signed-in user.</p>
+                    <div>
+                        <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+            (function () {
+                const pluginId = '886bc3d5-31bb-4dcb-8fbd-45e5caf9e05d';
+                const page = document.querySelector('#tagEditorConfigurationPage');
+                const form = page.querySelector('.configForm');
+                const checkbox = page.querySelector('#showPopularTags');
+
+                page.addEventListener('pageshow', function () {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(pluginId)
+                        .then(config => { checkbox.checked = Boolean(config.ShowPopularTags); })
+                        .catch(() => Dashboard.alert({
+                            title: 'Settings unavailable',
+                            message: 'The plugin settings could not be loaded.'
+                        }))
+                        .finally(() => Dashboard.hideLoadingMsg());
+                });
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(pluginId)
+                        .then(config => {
+                            config.ShowPopularTags = checkbox.checked;
+                            return ApiClient.updatePluginConfiguration(pluginId, config);
+                        })
+                        .then(Dashboard.processPluginConfigurationUpdateResult)
+                        .catch(() => Dashboard.alert({
+                            title: 'Settings could not be saved',
+                            message: 'Check the server connection and try again.'
+                        }))
+                        .finally(() => Dashboard.hideLoadingMsg());
+                });
+            }());
+        </script>
+    </div>
+</body>
+</html>

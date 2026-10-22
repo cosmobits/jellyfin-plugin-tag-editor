@@ -33,7 +33,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" artifacts/*.zip artifacts/*.sha256 artifacts/release-manifest.json \
-            --verify-tag --title "Tag Editor $GITHUB_REF_NAME" --generate-notes
+            --verify-tag --title "Tag Toolkit $GITHUB_REF_NAME" --generate-notes
       - name: Update the repository catalog after the archive is available
         run: |
           git fetch origin main
